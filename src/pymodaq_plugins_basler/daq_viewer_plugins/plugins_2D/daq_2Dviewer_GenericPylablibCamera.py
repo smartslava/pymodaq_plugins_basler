@@ -303,7 +303,8 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
         Terminate the communication protocol
         """
         # Terminate the communication
-        self.controller.close()
+        if self.controller:
+            self.controller.close()
         self.controller = None  # Garbage collect the controller
         self.status.initialized = False
         self.status.controller = None
