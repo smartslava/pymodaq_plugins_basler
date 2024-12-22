@@ -32,7 +32,7 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
         {'title': 'Image width', 'name': 'hdet', 'type': 'int', 'value': 1, 'readonly': True},
         {'title': 'Image height', 'name': 'vdet', 'type': 'int', 'value': 1, 'readonly': True},
         {'title': 'Timing', 'name': 'timing_opts', 'type': 'group', 'children':
-            [{'title': 'Exposure Time (ms)', 'name': 'exposure_time', 'type': 'int', 'value': 1},
+            [{'title': 'Exposure Time (ms)', 'name': 'exposure_time', 'type': 'int', 'value': 50},
              {'title': 'Compute FPS', 'name': 'fps_on', 'type': 'bool', 'value': True},
              {'title': 'FPS', 'name': 'fps', 'type': 'float', 'value': 0.0, 'readonly': True}]
          }
@@ -68,6 +68,11 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
 
         if param.name() == "fps_on":
             self.settings.child('timing_opts', 'fps').setOpts(visible=param.value())
+
+        if param.name() == "temp_on":
+            self.settings.child('misc_opts', 'temp').setOpts(visible=param.value())
+
+
 
         if param.name() == "update_roi":
             if param.value():  # Switching on ROI
@@ -142,6 +147,9 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
 
         # FPS visibility
         self.settings.child('timing_opts', 'fps').setOpts(visible=self.settings.child('timing_opts', 'fps_on').value())
+
+        # FPS visibility
+        self.settings.child('misc_opts', 'temp').setOpts(visible=self.settings.child('misc_opts', 'temp_on').value())
 
         # Update image parameters
         (hstart, hend, vstart, vend, hbin, vbin) = self.controller.get_roi()

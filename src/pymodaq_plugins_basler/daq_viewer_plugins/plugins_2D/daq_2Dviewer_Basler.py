@@ -36,7 +36,8 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
         {'title': 'Gain (dB)', 'name': 'gain', 'type': 'int', 'value': 0,
          'limits': [0, 600]}] + [
         {'title': 'Misc', 'name': 'misc_opts', 'type': 'group', 'children':
-            [{'title': 'Sensor Temperature', 'name': 'temp', 'type': 'float', 'value': 0.0, 'readonly': True, 'default': 0.0}]
+            [{'title': 'Update Sensor Temp.', 'name': 'temp_on', 'type': 'bool', 'value': True},
+                {'title': 'Sensor Temperature', 'name': 'temp', 'type': 'float', 'value': 0.0, 'readonly': True, 'default': 0.0}]
          }
     ]
     params[next((i for i, item in enumerate(params) if item["name"] == "camera_list"), None)][
@@ -86,7 +87,7 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
         self.settings.child('timing_opts', 'fps').setOpts(visible=self.settings.child('timing_opts', 'fps_on').value())
 
         # Temperature
-        self.settings.child('misc_opts', 'temp').setOpts(visible=self.settings.child('timing_opts', 'fps_on').value())
+        self.settings.child('misc_opts', 'temp').setOpts(visible=self.settings.child('misc_opts', 'temp_on').value())
 
         # Update image parameters
         (x0, xend, y0, yend, xbin, ybin) = self.controller.get_roi()
@@ -126,6 +127,11 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
             #temp = param
             #temp1 = param.value()
             self.controller.camera.GainRaw.Value=param.value()
+        elif param.name() == "temp_on":
+            self.settings.child('misc_opts', 'temp').setOpts(visible=param.value())
+
+
+
         else:
             super().commit_settings(param=param)
 
@@ -149,6 +155,7 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
             axes=self.axes)]))
         if self.settings.child('timing_opts', 'fps_on').value():
             self.update_fps()
+        if self.settings.child('misc_opts', 'temp_on').value():
             self.update_temp_val()
 
 
