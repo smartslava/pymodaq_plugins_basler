@@ -30,11 +30,17 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
     camera_list = [cam.GetFriendlyName() for cam in DartCamera.list_cameras()]
 
     # Update the params (nothing to change here)
+
     params = DAQ_2DViewer_GenericPylablibCamera.params + [
         {'title': 'Automatic exposure:', 'name': 'auto_exposure', 'type': 'bool', 'value': False},
-        {'title': 'Gain (dB)', 'name': 'gain', 'type': 'float', 'value': 0, 'limits': [0, 18]},
+        {'title': 'Gain (dB)', 'name': 'gain', 'type': 'int', 'value': 0,
+         'limits': [0, 600]}] + [
+        {'title': 'Misc', 'name': 'misc_opts', 'type': 'group', 'children':
+            [{'title': 'Sensor Temperature', 'name': 'temp', 'type': 'float', 'value': 0.0, 'readonly': True, 'default': 0.0}]
+         }
     ]
-    params[next((i for i, item in enumerate(params) if item["name"] == "camera_list"), None)]['limits'] = camera_list  # type: ignore
+    params[next((i for i, item in enumerate(params) if item["name"] == "camera_list"), None)][
+        'limits'] = camera_list  # type: ignore
 
     def init_controller(self) -> DartCamera:
         # Define the camera controller.
@@ -49,35 +55,38 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
                 name = cam.GetFullName()
                 return DartCamera(name=name, callback=self.callback)
         self.emit_status(ThreadCommand('Update_Status', ["Camera not found", 'log']))
+
+
+
         raise ValueError(f"Camera with name {friendly_name} not found anymore.")
 
     def ini_detector(self, controller=None):
-        """Detector communication initialization
 
-        Parameters
-        ----------
-        controller: (object)
-            custom object of a PyMoDAQ plugin (Slave case). None if only one actuator/detector by controller
-            (Master case)
-
-        Returns
-        -------
-        info: str
-        initialized: bool
-            False if initialization failed otherwise True
-        """
         # Initialize camera class
         self.ini_detector_init(old_controller=controller,
                                new_controller=self.init_controller())
 
         # Get camera name
         self.settings.child('camera_info').setValue(self.controller.get_device_info()[1])
+        self.controller.camera.Open()
+
+
 
         # Set exposure time
-        self.controller.set_exposure(self.settings.child('timing_opts', 'exposure_time').value() / 1000)
+        exposure=self.settings.child('timing_opts', 'exposure_time').value() / 1000
+        try:
+            self.controller.set_exposure(exposure)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            # Handle the error or log it for debugging
+
+
 
         # FPS visibility
         self.settings.child('timing_opts', 'fps').setOpts(visible=self.settings.child('timing_opts', 'fps_on').value())
+
+        # Temperature
+        self.settings.child('misc_opts', 'temp').setOpts(visible=self.settings.child('timing_opts', 'fps_on').value())
 
         # Update image parameters
         (x0, xend, y0, yend, xbin, ybin) = self.controller.get_roi()
@@ -104,10 +113,19 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
             A given parameter (within detector_settings) whose value has been changed by the user
         """
         if param.name() == "auto_exposure":
-            self.controller.camera.ExposureAuto.SetValue(
-                "Continuous" if self.settings['auto_exposure'] else "Off")
+            if self.settings['auto_exposure']:
+                self.controller.camera.ExposureAuto.Value="Continuous"
+            else:
+                self.controller.camera.ExposureAuto.Value="Off"
+                exposure = self.settings.child('timing_opts', 'exposure_time').value() / 1000
+                self.controller.set_exposure(exposure)
+
         elif param.name() == "gain":
-            self.controller.camera.Gain.SetValue(param.value())
+            #self.controller.camera.Gain.SetValue(param.value())
+            #self.controller.camera.GainAuto = "Off"
+            #temp = param
+            #temp1 = param.value()
+            self.controller.camera.GainRaw.Value=param.value()
         else:
             super().commit_settings(param=param)
 
@@ -131,6 +149,7 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
             axes=self.axes)]))
         if self.settings.child('timing_opts', 'fps_on').value():
             self.update_fps()
+            self.update_temp_val()
 
 
 if __name__ == '__main__':

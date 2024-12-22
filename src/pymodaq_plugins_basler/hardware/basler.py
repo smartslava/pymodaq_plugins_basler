@@ -84,19 +84,38 @@ class DartCamera:
         """Get the exposure time in s."""
         return self.camera.ExposureTime.GetValue() / 1e6
 
+    def get_temp(self) -> float:
+        try:
+            #print(type(self.camera.TemperatureAbs.Value))  # Check if it's a float
+            return self.camera.TemperatureAbs.Value  # return the value
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            # Handle the error or log it for debugging
+
     def set_exposure(self, value: float) -> None:
         """Set the exposure time in s."""
-        self.camera.ExposureTime.SetValue(value * 1e6)
+        self.camera.ExposureMode = 'Timed'
+        self.camera.ExposureAuto = 'Off'
+        self.camera.ExposureTimeMode = 'Standard'
+        self.camera.ExposureTimeAbs=value * 1e6
+
+
 
     def get_roi(self) -> Tuple[float, float, float, float, int, int]:
         """Return x0, width, y0, height, xbin, ybin."""
-        x0 = self.camera.OffsetX.GetValue()
-        width = self.camera.Width.GetValue()
-        y0 = self.camera.OffsetY.GetValue()
-        height = self.camera.Height.GetValue()
-        xbin = self.camera.BinningHorizontal.GetValue()
-        ybin = self.camera.BinningVertical.GetValue()
-        return x0, x0 + width, y0, y0 + height, xbin, ybin
+        try:
+            x0 = self.camera.OffsetX.Value
+            width = self.camera.Width.Value
+            y0 = self.camera.OffsetY.Value
+            height = self.camera.Height.Value
+            xbin = self.camera.BinningHorizontal.Value
+            ybin = self.camera.BinningVertical.Value
+            return x0, x0 + width, y0, y0 + height, xbin, ybin
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            # Handle the error or log it for debugging
+
+
 
     def set_roi(self, hstart: int, hend: int, vstart: int, vend: int, hbin: int, vbin: int) -> None:
         camera = self.camera
@@ -152,6 +171,7 @@ class DartCamera:
         return self.get_one()
 
     def close(self) -> None:
+
         self.camera.Close()
         self.camera.DetachDevice()
 
@@ -175,7 +195,8 @@ class DartCamera:
 
         Whenever a grab succeeded, the callback defined in :meth:`set_callback` is called.
         """
-        self.camera.AcquisitionFrameRate.SetValue(max_frame_rate)
+        self.camera.AcquisitionFrameRateAbs.Value=max_frame_rate
+       # self.camera.AcquisitionFrameRate.SetValue(max_frame_rate)
         self.camera.StartGrabbing(
             pylon.GrabStrategy_LatestImageOnly,
             pylon.GrabLoop_ProvidedByInstantCamera

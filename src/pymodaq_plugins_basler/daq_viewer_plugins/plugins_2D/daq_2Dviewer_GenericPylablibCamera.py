@@ -180,9 +180,12 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
         #
         # sizex = wx // bx
         # sizey = wy // by
-        (hstart, hend, vstart, vend, *_) = self.controller.get_roi()
-        height = hend - hstart
-        width = vend - vstart
+
+        #(hstart, hend, vstart, vend, *_) = self.controller.get_roi()
+        #height = hend - hstart
+        #width = vend - vstart
+        height = self.controller.camera.SensorHeigth.Value
+        width = self.controller.camera.SensorWidth.Value
 
         self.settings.child('hdet').setValue(width)
         self.settings.child('vdet').setValue(height)
