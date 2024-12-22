@@ -37,7 +37,7 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
          'limits': [0, 600]}] + [
         {'title': 'Misc', 'name': 'misc_opts', 'type': 'group', 'children':
             [{'title': 'Update Sensor Temp.', 'name': 'temp_on', 'type': 'bool', 'value': True},
-                {'title': 'Sensor Temperature', 'name': 'temp', 'type': 'float', 'value': 0.0, 'readonly': True, 'default': 0.0}]
+                {'title': 'Sensor Temp. (°C)', 'name': 'temp', 'type': 'float', 'value': 0.0, 'readonly': True, 'default': 0.0}]
          }
     ]
     params[next((i for i, item in enumerate(params) if item["name"] == "camera_list"), None)][
