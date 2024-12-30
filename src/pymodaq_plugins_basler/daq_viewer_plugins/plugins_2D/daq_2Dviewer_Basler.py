@@ -132,6 +132,8 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
 
 
 
+
+
         else:
             super().commit_settings(param=param)
 

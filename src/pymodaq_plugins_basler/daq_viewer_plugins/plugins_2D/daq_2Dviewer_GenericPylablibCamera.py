@@ -22,7 +22,7 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
     The class needs to be subclassed, the subclass only has to define the camera_list and init_controller methods
     and the plugin will work.
     """
-
+    #{'title': 'Binning', 'name': 'binning', 'type': 'list', 'limits': [1, 4]},
     params = comon_parameters + [
         {'title': 'Camera:', 'name': 'camera_list', 'type': 'list', 'limits': []},
         {'title': 'Camera model:', 'name': 'camera_info', 'type': 'str', 'value': '', 'readonly': True},
@@ -96,6 +96,15 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
                 param.setValue(False)
 
         if param.name() == 'binning':
+            # We handle ROI and binning separately for clarity
+            (x0, w, y0, h, *_) = self.controller.get_roi()  # Get current ROI
+            xbin = self.settings.child('binning').value()
+            ybin = self.settings.child('binning').value()
+            new_roi = (x0, w, xbin, y0, h, ybin)
+            self.update_rois(new_roi)
+
+
+        if param.name() == 'binning_mode':
             # We handle ROI and binning separately for clarity
             (x0, w, y0, h, *_) = self.controller.get_roi()  # Get current ROI
             xbin = self.settings.child('binning').value()
