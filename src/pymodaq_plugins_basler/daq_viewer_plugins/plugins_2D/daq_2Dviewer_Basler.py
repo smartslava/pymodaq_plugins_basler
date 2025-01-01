@@ -96,8 +96,9 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
         self.settings.child('binning').setValue(xbin)
         self.settings.child('hdet').setValue(width)
         self.settings.child('vdet').setValue(height)
-
-        # Here in the original is the callback
+        ini_binning_mode = self.settings.child('binning_mode').value()
+        self.controller.camera.BinningModeHorizontal.Value = ini_binning_mode
+        self.controller.camera.BinningModeVertical.Value = ini_binning_mode
 
         self._prepare_view()
 

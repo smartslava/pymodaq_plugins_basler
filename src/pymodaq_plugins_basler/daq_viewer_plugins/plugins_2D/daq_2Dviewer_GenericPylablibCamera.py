@@ -104,18 +104,18 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
             self.update_rois(new_roi)
 
 
-        if param.name() == 'binning_mode':
+        #if param.name() == 'binning_mode':
             # We handle ROI and binning separately for clarity
-            (x0, w, y0, h, *_) = self.controller.get_roi()  # Get current ROI
-            xbin = self.settings.child('binning').value()
-            ybin = self.settings.child('binning').value()
-            new_roi = (x0, w, xbin, y0, h, ybin)
-            self.update_rois(new_roi)
+          #  (x0, w, y0, h, *_) = self.controller.get_roi()  # Get current ROI
+         #   xbin = self.settings.child('binning').value()
+          #  ybin = self.settings.child('binning').value()
+          #  new_roi = (x0, w, xbin, y0, h, ybin)
+          #  self.update_rois(new_roi)
 
         if param.name() == "clear_roi":
             if param.value():  # Switching on ROI
                 wdet, hdet = self.controller.get_detector_size()
-                # self.settings.child('ROIselect', 'x0').setValue(0)
+                self.settings.child('ROIselect', 'x0').setValue(0)
                 # self.settings.child('ROIselect', 'width').setValue(wdet)
                 self.settings.child('binning').setValue(1)
                 #

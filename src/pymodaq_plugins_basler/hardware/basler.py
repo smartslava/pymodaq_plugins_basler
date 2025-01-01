@@ -120,18 +120,21 @@ class DartCamera:
     def set_roi(self, hstart: int, hend: int, vstart: int, vend: int, hbin: int, vbin: int) -> None:
         camera = self.camera
         m_width, m_height = self.get_detector_size()
+        camera.BinningHorizontal.SetValue(int(hbin))
+        camera.BinningVertical.SetValue(int(vbin))
         inc = camera.Width.Inc  # minimum step size
         hstart = detector_clamp(hstart, m_width) // inc * inc
         vstart = detector_clamp(vstart, m_height) // inc * inc
         # Set the offset to 0 first, to allow full range of width values.
         camera.OffsetX.SetValue(0)
-        camera.Width.SetValue((detector_clamp(hend, m_width) - hstart) // inc * inc)
+        width_val=(detector_clamp(hend, m_width) - hstart) // inc * inc
+        camera.Width.SetValue(width_val)
         camera.OffsetX.SetValue(hstart)
         camera.OffsetY.SetValue(0)
-        camera.Height.SetValue((detector_clamp(vend, m_height) - vstart) // inc * inc)
+        height_val=(detector_clamp(vend, m_height) - vstart) // inc * inc
+        camera.Height.SetValue(height_val)
         camera.OffsetY.SetValue(vstart)
-        camera.BinningHorizontal.SetValue(int(hbin))
-        camera.BinningVertical.SetValue(int(vbin))
+
 
     def get_detector_size(self) -> Tuple[int, int]:
         """Return width and height of detector in pixels."""
