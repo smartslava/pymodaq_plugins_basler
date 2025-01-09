@@ -5,6 +5,8 @@ from typing import Any, Callable, List, Optional, Tuple, Union
 from pypylon import pylon
 from qtpy import QtCore
 
+from pymodaq_plugins_basler.utils import bool_hasattr
+
 if not hasattr(QtCore, "pyqtSignal"):
     QtCore.pyqtSignal = QtCore.Signal  # type: ignore
 
@@ -86,18 +88,28 @@ class DartCamera:
 
     def get_temp(self) -> float:
         try:
-            #print(type(self.camera.TemperatureAbs.Value))  # Check if it's a float
-            return self.camera.TemperatureAbs.Value  # return the value
+            #if bool_hasattr(self.camera, "TemperatureAbs"):
+            return self.camera.TemperatureAbs.Value
+            #elif bool_hasattr(self.camera, "DeviceTemperatureSelector"):
+            #    self.camera.DeviceTemperatureSelector.Value = "Sensor"
+            #    return self.camera.DeviceTemperature.Value
         except Exception as e:
             print(f"An error occurred: {e}")
             # Handle the error or log it for debugging
+
+
 
     def set_exposure(self, value: float) -> None:
         """Set the exposure time in s."""
         self.camera.ExposureMode = 'Timed'
         self.camera.ExposureAuto = 'Off'
-        self.camera.ExposureTimeMode = 'Standard'
-        self.camera.ExposureTimeAbs=value * 1e6
+        if bool_hasattr(self.camera, "ExposureTimeMode"):
+            # 'ExposureTimeMode' exists
+            self.camera.ExposureTimeMode = 'Standard'
+        if bool_hasattr(self.camera, 'ExposureTimeAbs'):
+            self.camera.ExposureTimeAbs=value * 1e6
+        elif bool_hasattr(self.camera, 'ExposureTime'):
+            self.camera.ExposureTime = value * 1e6
 
 
 
@@ -222,7 +234,8 @@ class ConfigurationHandler(pylon.ConfigurationEventHandler):
 
     def OnOpened(self, camera: pylon.InstantCamera) -> None:
         """Standard configuration after being opened."""
-        camera.PixelFormat.SetValue('Mono12')
+        #camera.PixelFormat.SetValue('Mono8')
+        camera.PixelFormat.Value = "Mono12"
         camera.GainAuto.SetValue('Off')
         camera.ExposureAuto.SetValue('Off')
 

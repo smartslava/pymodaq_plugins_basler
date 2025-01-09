@@ -4,6 +4,8 @@ from pymodaq.utils.data import DataFromPlugins, DataToExport
 from pymodaq.utils.daq_utils import ThreadCommand
 from pymodaq.control_modules.viewer_utility_classes import main
 
+from pymodaq_plugins_basler.utils import bool_hasattr
+
 try:
     from pymodaq_plugins_pylablib_camera.daq_viewer_plugins.plugins_2D.daq_2Dviewer_GenericPylablibCamera import DAQ_2DViewer_GenericPylablibCamera
     # available here: https://github.com/rgeneaux/pymodaq_plugins_test_pylablib
@@ -97,8 +99,18 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
         self.settings.child('hdet').setValue(width)
         self.settings.child('vdet').setValue(height)
         ini_binning_mode = self.settings.child('binning_mode').value()
-        self.controller.camera.BinningModeHorizontal.Value = ini_binning_mode
-        self.controller.camera.BinningModeVertical.Value = ini_binning_mode
+
+
+
+
+        if bool_hasattr(self.controller.camera, 'BinningModeHorizontal'):
+            self.controller.camera.BinningModeHorizontal.IntValue = ini_binning_mode
+            self.controller.camera.BinningModeVertical.IntValue = ini_binning_mode
+        elif bool_hasattr(self.controller.camera, 'BinningHorizontalMode'):
+            self.controller.camera.BinningHorizontalMode.IntValue = ini_binning_mode
+            self.controller.camera.BinningVerticalMode.IntValue = ini_binning_mode
+
+
 
         self._prepare_view()
 
