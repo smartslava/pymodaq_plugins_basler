@@ -193,7 +193,7 @@ class DartCamera:
         else:
             raise TimeoutError("Grabbing exceeded timeout")
 
-    def start_grabbing(self, max_frame_rate=50) -> None:
+    def start_grabbing(self, max_frame_rate) -> None:
         """Start continuously to grab data.
         Whenever a grab succeeded, the callback defined in :meth:`set_callback` is called.
         """

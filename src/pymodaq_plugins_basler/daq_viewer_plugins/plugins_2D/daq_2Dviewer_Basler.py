@@ -137,7 +137,8 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
     def grab_data(self, Naverage: int = 1, live: bool = False, **kwargs) -> None:
         if live:
             self._prepare_view()
-            self.controller.start_grabbing()
+            max_frame_rate=self.settings.child('timing_opts', 'fps_limit').value()
+            self.controller.start_grabbing(max_frame_rate)
         else:
             self._prepare_view()
             self.emit_data()

@@ -18,7 +18,6 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
 
     It is meant to be used for cameras supported by the pylablib library, see here:
     https://pylablib.readthedocs.io/en/latest/devices/cameras_root.html
-
     The class needs to be subclassed, the subclass only has to define the camera_list and init_controller methods
     and the plugin will work.
     """
@@ -33,12 +32,13 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
         {'title': 'Image height', 'name': 'vdet', 'type': 'int', 'value': 1, 'readonly': True},
         {'title': 'Timing', 'name': 'timing_opts', 'type': 'group', 'children':
             [{'title': 'Exposure Time (ms)', 'name': 'exposure_time', 'type': 'int', 'value': 50},
+             {'title': 'Limit FPS', 'name': 'fps_limit', 'type': 'int', 'value': 50},
              {'title': 'Compute FPS', 'name': 'fps_on', 'type': 'bool', 'value': True},
              {'title': 'FPS', 'name': 'fps', 'type': 'float', 'value': 0.0, 'readonly': True}]
          }
     ]
     callback_signal = QtCore.Signal()
-    roi_pos_size = QtCore.QRectF(0, 0, 10, 10)
+    roi_pos_size = QtCore.QRectF(0, 0, 100, 100)
     axes = []
 
     def init_controller(self):
