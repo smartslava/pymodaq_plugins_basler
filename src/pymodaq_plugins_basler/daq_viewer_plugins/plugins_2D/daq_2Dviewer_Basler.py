@@ -97,8 +97,8 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
         self.settings.child('hdet').setValue(width)
         self.settings.child('vdet').setValue(height)
         ini_binning_mode = self.settings.child('binning_mode').value()
-        self.controller.camera.BinningModeHorizontal.IntValue = ini_binning_mode
-        self.controller.camera.BinningModeVertical.IntValue = ini_binning_mode
+        self.controller.camera.BinningHorizontalMode.Value = ini_binning_mode
+        self.controller.camera.BinningVerticalMode.Value = ini_binning_mode
 
         self._prepare_view()
 
@@ -132,7 +132,6 @@ class DAQ_2DViewer_Basler(DAQ_2DViewer_GenericPylablibCamera):
             self.settings.child('misc_opts', 'temp').setOpts(visible=param.value())
         else:
             super().commit_settings(param=param)
-
 
     def grab_data(self, Naverage: int = 1, live: bool = False, **kwargs) -> None:
         if live:

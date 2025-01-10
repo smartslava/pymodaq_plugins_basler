@@ -1,8 +1,7 @@
 """
 Copied (and slightly modified) from https://github.com/rgeneaux/pymodaq_plugins_test_pylablib
 """
-
-
+from PyQt5.QtCore import QRectF
 from pymodaq.utils.daq_utils import ThreadCommand
 from pymodaq.utils.data import DataFromPlugins, Axis, DataToExport
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
@@ -37,9 +36,12 @@ class DAQ_2DViewer_GenericPylablibCamera(DAQ_Viewer_base):
              {'title': 'FPS', 'name': 'fps', 'type': 'float', 'value': 0.0, 'readonly': True}]
          }
     ]
+
+
     callback_signal = QtCore.Signal()
-    roi_pos_size = QtCore.QRectF(0, 0, 100, 100)
+    roi_pos_size = QtCore.QRectF(10, 10, 200, 200)
     axes = []
+
 
     def init_controller(self):
         raise NotImplementedError('This is a generic camera plugin for which .init_controller() has not been defined.')
